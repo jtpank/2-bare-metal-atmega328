@@ -1,10 +1,10 @@
 1. sudo apt-get install gcc-avr
-2.  avr-gcc -mmcu=atmega328p -c blink.c
- this compiles your blink.o
+2.  avr-gcc -mmcu=atmega328p -c main.c
+ this compiles your main.o
 3. sudo apt install avrdude avrdude-doc 
 4. sudo apt install avr-libc
 After install avr-libc, we can run:
-avr-gcc -mmcu=atmega328p blink.c
+avr-gcc -mmcu=atmega328p main.c
 
 to get an exectuable!
 
@@ -15,7 +15,7 @@ avrdude -v -c /etc/avrdude.conf -p atmega328p -c stk500v1 -P /dev/ttyUSB0 -b 192
 Now we can convert the ELF exe to a hex file using avr-objcopy, reducing the file size:
 
 compile with -Os option for optimization!
-avr-gcc -mmcu=atmega328p blink.c
+avr-gcc -mmcu=atmega328p main.c
 avr-objcopy -O ihex -j.text -j.data a.out a-small.hex
 avrdude -v -c /etc/avrdude.conf -p atmega328p -c stk500v1 -P /dev/ttyUSB0 -b 19200 -U flash:w:a-small.hex:i
 

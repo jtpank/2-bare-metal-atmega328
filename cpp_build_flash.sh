@@ -13,7 +13,7 @@ SOURCES=(
   main.cpp
   modules/Timer/Timer.cpp
   modules/SPI/SPI.cpp
-
+  modules/rf24/RF24.cpp
 )
 
 avr-g++ \
@@ -22,6 +22,7 @@ avr-g++ \
   -DF_CPU="$F_CPU" \
   -Imodules/SPI \
   -Imodules/Timer \
+  -Imodules/rf24 \
   -Iutils \
   -Os \
   -Wall \

@@ -9,6 +9,7 @@
 #include "utils/StaticVector.hpp"
 #include "modules/Timer/Timer.hpp"
 #include "modules/SPI/SPI.hpp"
+#include "modules/rf24/RF24.hpp"
 
 #define UART_BAUD 9600
 #define UBRR_VALUE ((F_CPU / 16 / UART_BAUD) - 1)
@@ -65,15 +66,44 @@ void foo()
   printf("[foo]: SP=0x%04X\n", get_stack_ptr());
 }
 
+#define CE_PIN  RF24_PIN_B(1)  // Arduino D9
+#define CSN_PIN RF24_PIN_B(0)  // Arduino D8
+
+RF24 radio(CE_PIN, CSN_PIN);
+
+uint8_t address[][6] = {"1Node", "2Node"};
+bool radioNumber = 0;
+bool role = false;
+float payload = 0.0f;
+
 
 int main()
 {
     uart_init();
     Timer::init();
-    SPI spi;
-    spi.spi_init();
+    SPI.begin();
+    int count = 0;
+    while(!radio.begin())
+    {
+      count++;
+      if(count % 100 == 0)
+      {
+        printf("radiobegin\n");
+      }
+    }
+    radio.setPALevel(RF24_PA_LOW);
+    radio.setPayloadSize(sizeof(payload));
 
-    DDRB |= (1 << PB5);
+    radio.stopListening(address[radioNumber]);
+    radio.openReadingPipe(1, address[!radioNumber]);
+
+    if (!role) {
+      radio.startListening();
+    }
+
+
+
+    //DDRB |= (1 << PB5);
     printf("program start\n");
   /*
     constexpr uint8_t _N = 32;
@@ -92,7 +122,7 @@ int main()
     while (true)
     {
       uint16_t start = Timer::ticks();
-      PORTB ^= (1 << PB5);
+      //PORTB ^= (1 << PB5);
 
       uint16_t end = Timer::ticks();
       // uint16_t subtraction handles wraparound correctly
